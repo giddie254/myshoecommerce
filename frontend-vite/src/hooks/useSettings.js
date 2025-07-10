@@ -12,7 +12,8 @@ export const useSettings = () => {
         const { data } = await axios.get('/api/admin/settings');
         setSettings(data);
       } catch (error) {
-        console.error('Failed to load settings:', error);
+        console.warn('Admin settings not available. Falling back to empty settings.');
+        setSettings({});
       } finally {
         setLoading(false);
       }
@@ -23,3 +24,4 @@ export const useSettings = () => {
 
   return { settings, loading };
 };
+

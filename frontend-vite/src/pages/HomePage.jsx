@@ -2,15 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import {
-  ShoppingBag,
-  Star,
-  Truck,
-  RotateCcw,
-  Headset,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSwipeable } from 'react-swipeable';
 
@@ -20,13 +12,11 @@ const CountdownTimer = ({ endTime }) => {
   function calculateTimeLeft() {
     const now = new Date();
     const difference = new Date(endTime) - now;
-
     if (difference <= 0) return 'Deal ended';
 
     const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
     const minutes = Math.floor((difference / (1000 * 60)) % 60);
     const seconds = Math.floor((difference / 1000) % 60);
-
     return `${hours}h ${minutes}m ${seconds}s`;
   }
 
@@ -50,7 +40,7 @@ const BannerCarousel = () => {
         const { data } = await axios.get('/api/banners');
         setBanners(data.filter((b) => b.isActive));
       } catch (err) {
-        console.error('Failed to fetch banners:', err);
+        console.error('Failed to fetch banners:', err.message);
       }
     };
     fetchBanners();
@@ -137,14 +127,14 @@ const HomePage = () => {
           couponRes
         ] = await Promise.all([
           axios.get('/api/products/featured'),
-          axios.get('/api/homepage'),
-          axios.get('/api/testimonials'),
-          axios.get('/api/categories/featured'),
+          axios.get('/api/admin/settings'),
+          axios.get('/api/homepage/testimonials'),
+          axios.get('/api/homepage/categories/featured'),
           axios.get('/api/products/flash-deals'),
           axios.get('/api/coupons/active')
         ]);
-        setProducts(Array.isArray(featuredRes.data.products) ? featuredRes.data.products : []);
-        setSettings(settingsRes.data);
+        setProducts(featuredRes.data.products || []);
+        setSettings(settingsRes.data || {});
         setTestimonials(testimonialsRes.data || []);
         setFeaturedCategories(categoriesRes.data || []);
         setFlashDeals(flashDealsRes.data || []);
@@ -167,7 +157,6 @@ const HomePage = () => {
         <BannerCarousel />
       </div>
 
-      {/* FLASH DEALS */}
       {flashDeals.length > 0 && (
         <section className="py-16 px-6 md:px-20 bg-red-50 dark:bg-background-dark border-t border-gray-200 dark:border-gray-700">
           <div className="max-w-7xl mx-auto">
@@ -209,12 +198,11 @@ const HomePage = () => {
           </div>
         </section>
       )}
-
-      {/* Add additional homepage sections here */}
     </div>
   );
 };
 
 export default HomePage;
+
 
 
